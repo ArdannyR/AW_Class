@@ -159,10 +159,10 @@ const actualizarPerfil = async (req,res)=>{
     }
 }
 
-const actualizarPassword = async (req,res)=>{
+const actualizarPassword = async (req, res) => {
     try {
         const veterinarioBDD = await Veterinario.findById(req.veterinarioHeader._id)
-        if(!veterinarioBDD) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
+        if(!veterinarioBDD) return res.status(404).json({msg: "Lo sentimos, no existe el veterinario"})
         const verificarPassword = await veterinarioBDD.matchPassword(req.body.passwordactual)
         if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password actual no es el correcto"})
         veterinarioBDD.password = await veterinarioBDD.encryptPassword(req.body.passwordnuevo)

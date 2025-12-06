@@ -60,9 +60,19 @@ const storeProfile = create((set) => ({
         }
     },
 
-    updatePasswordProfile:async(url,data)=>{
+    updatePasswordProfile: async (url, data) => {
+        const token = storeAuth.getState().token 
+        if (!token) return
+
         try {
-            const respuesta = await axios.put(url, data, getAuthHeaders())
+            const options = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            
+            const respuesta = await axios.put(url, data, options) 
             return respuesta
         } catch (error) {
             console.log(error)
