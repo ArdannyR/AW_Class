@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import Veterinario from "../models/Veterinario.js"
-
+import Paciente from "../models/Paciente.js"
 
 /**
  * Crear token JWT
@@ -11,8 +11,6 @@ import Veterinario from "../models/Veterinario.js"
 const crearTokenJWT = (id, rol) => {
     return jwt.sign({ id, rol }, process.env.JWT_SECRET, { expiresIn: "1d" })
 }
-
-
 
 
 const verificarTokenJWT = async (req, res, next) => {
@@ -27,7 +25,13 @@ const verificarTokenJWT = async (req, res, next) => {
             if (!veterinarioBDD) return res.status(401).json({ msg: "Usuario no encontrado" })
             req.veterinarioHeader = veterinarioBDD
             next()
+        } else {
+            const pacienteBDD = await Paciente.findById(id).lean().select("-password")
+            if (!pacienteBDD) return res.status(401).json({ msg: "Usuario no encontrado" })
+            req.pacienteHeader = pacienteBDD
+            next()
         }
+        
     } catch (error) {
         console.log(error)
         return res.status(401).json({ msg: `Token inválido o expirado - ${error}` })
