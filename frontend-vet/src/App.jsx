@@ -17,10 +17,22 @@ import Reset from './pages/Reset'
 import Panel from './pages/Panel'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
+import { useEffect } from 'react'
+import storeProfile from './context/storeProfile'
+import storeAuth from './context/storeAuth'
 
 
 
 function App() {
+  const { profile} = storeProfile()
+  const { token } = storeAuth()
+
+  useEffect(() => {
+    if(token){
+      profile()
+    }
+  }, [token])
+
   return (
     <>
       <BrowserRouter>
