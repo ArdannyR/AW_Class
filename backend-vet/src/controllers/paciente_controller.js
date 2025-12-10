@@ -68,9 +68,27 @@ const detallePaciente = async(req,res)=>{
     }
 }
 
+const eliminarPaciente = async (req,res)=>{
+
+    try {
+        const {id} = req.params
+        const {salidaMascota} = req.body
+        if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Debes llenar todos los campos"})
+        if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`No existe el paciente ${id}`})
+        await Paciente.findByIdAndUpdate(id,{salidaMascota:Date.parse(salidaMascota),estadoMascota:false})
+        res.status(200).json({msg:"Fecha de salida registrado exitosamente"})
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
+}
+
+
 
 export{
     registrarPaciente,
     listarPacientes,
-    detallePaciente
+    detallePaciente,
+    eliminarPaciente
 }
