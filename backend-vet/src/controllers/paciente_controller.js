@@ -1,6 +1,7 @@
 import { sendMailToOwner } from "../helpers/sendMail.js"
 import { subirBase64Cloudinary, subirImagenCloudinary } from "../helpers/uploadCloudinary.js"
 import Paciente from "../models/Paciente.js"
+import mongoose from "mongoose"
 
 const registrarPaciente = async(req,res)=>{
 
@@ -53,8 +54,23 @@ const listarPacientes = async (req,res)=>{
     }
 }
 
+const detallePaciente = async(req,res)=>{
+
+    try {
+        const {id} = req.params
+        if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`No existe el veterinario ${id}`});
+        const paciente = await Paciente.findById(id).select("-createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+        res.status(200).json(paciente)
+        
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
+}
+
 
 export{
     registrarPaciente,
-    listarPacientes
+    listarPacientes,
+    detallePaciente
 }
