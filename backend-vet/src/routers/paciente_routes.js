@@ -6,5 +6,4 @@ const router = Router()
 
 router.post("/paciente/registro",verificarTokenJWT, registrarPaciente)
 
-
 export default router
