@@ -85,7 +85,6 @@ const eliminarPaciente = async (req,res)=>{
 }
 
 
-
 export{
     registrarPaciente,
     listarPacientes,
