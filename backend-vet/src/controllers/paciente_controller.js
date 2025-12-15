@@ -2,6 +2,8 @@ import { sendMailToOwner } from "../helpers/sendMail.js"
 import { subirBase64Cloudinary, subirImagenCloudinary } from "../helpers/uploadCloudinary.js"
 import Paciente from "../models/Paciente.js"
 import mongoose from "mongoose"
+import { v2 as cloudinary } from 'cloudinary'
+import fs from "fs-extra"
 
 const registrarPaciente = async(req,res)=>{
 
@@ -84,10 +86,28 @@ const eliminarPaciente = async (req,res)=>{
     }
 }
 
+const actualizarPaciente = async(req,res)=>{
+    const {id} = req.params
+    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
+    if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
+    if (req.files?.imagen) {
+        const paciente = await Paciente.findById(id)
+        if (paciente.avatarMascotaID) {
+            await cloudinary.uploader.destroy(paciente.avatarMascotaID);
+        }
+        const cloudiResponse = await cloudinary.uploader.upload(req.files.imagen.tempFilePath, { folder: 'Pacientes' });
+        req.body.avatarMascota = cloudiResponse.secure_url;
+        req.body.avatarMascotaID = cloudiResponse.public_id;
+        await fs.unlink(req.files.imagen.tempFilePath);
+    }
+    await Paciente.findByIdAndUpdate(id, req.body, { new: true })
+    res.status(200).json({msg:"Actualización exitosa del paciente"})
+}
 
 export{
     registrarPaciente,
     listarPacientes,
     detallePaciente,
-    eliminarPaciente
+    eliminarPaciente,
+    actualizarPaciente
 }
