@@ -35,7 +35,8 @@ const confirmarMail = async (req, res) => {
     try {
         const { token } = req.params
         const veterinarioBDD = await Veterinario.findOne({ token })
-        if (!veterinarioBDD) return res.status(404).json({ msg: "Token inválido o cuenta ya confirmada" })
+        if (!veterinarioBDD) 
+            return res.status(404).json({ msg: "Token inválido o cuenta ya confirmada" })
         veterinarioBDD.token = null
         veterinarioBDD.confirmEmail = true
         await veterinarioBDD.save()
