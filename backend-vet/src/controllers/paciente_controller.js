@@ -127,11 +127,21 @@ const loginPropietario = async(req,res)=>{
     }
 }
 
+const perfilPropietario = async(req,res)=>{
+    try {
+        const {_id, rol,nombrePropietario,cedulaPropietario,emailPropietario,celularPropietario,nombreMascota} = req.pacienteHeader
+        res.status(200).json({_id, rol,nombrePropietario,cedulaPropietario,emailPropietario,celularPropietario,nombreMascota})
+    } catch (error) {
+        res.status(500).json({msg: `❌ Error en el servidor - ${error}`})
+    }
+}
+
 export{
     registrarPaciente,
     listarPacientes,
     detallePaciente,
     eliminarPaciente,
     actualizarPaciente,
-    loginPropietario
+    loginPropietario,
+    perfilPropietario
 }

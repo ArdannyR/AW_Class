@@ -17,21 +17,15 @@ const storeProfile = create((set) => ({
         if (!token) return
 
         try {
-            // CORRECCIÓN: La ruta correcta según tu backend es /veterinario/perfil
-            const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/perfil`
-            
-            const options = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-
-            const respuesta = await axios.get(url, options)
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"))
+            const endpoint = storedUser.state.rol ==="veterinario"
+                ? "veterinario/perfil"
+                : "paciente/perfil"
+            const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
+            const respuesta = await axios.get(url, getAuthHeaders())
             set({ user: respuesta.data })
         } catch (error) {
             console.error(error)
-            set({ error: error.message })
         }
     },
 

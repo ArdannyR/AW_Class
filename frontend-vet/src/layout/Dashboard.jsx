@@ -25,11 +25,11 @@ const Dashboard = () => {
 
                 {/* Nombre de usuario */}
                 <p className='text-slate-400 text-center my-4 text-sm'> <span className='bg-green-600 w-3 h-3 
-                    inline-block rounded-full'></span> Bienvenido - {user?.nombre} </p>
+                    inline-block rounded-full'></span> Bienvenido - {user?.nombre || user?.nombrePropietario} </p>
                 
 
                 {/* Rol de usuario */}
-                <p className='text-slate-400 text-center my-4 text-sm'> Rol - {user?.rol} </p>
+                <p className='text-slate-400 text-center my-4 text-sm'> Rol - {user?.rol}</p>
                 
                 
                 <hr className="mt-5 border-slate-500" />
@@ -84,7 +84,7 @@ const Dashboard = () => {
                 
                     {/* Nombre de usuario */}
                     <div className='text-md font-semibold text-slate-100'>
-                        Usuario - {user?.nombre}
+                        Usuario - {user?.nombre || user?.nombrePropietario}
                     </div>
                 
                 
