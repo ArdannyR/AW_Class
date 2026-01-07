@@ -8,21 +8,33 @@ const storeProfile = create((set) => ({
     user: null,
     error: null,
 
-    // Limpiar usuario del estado
     clearUser: () => set({ user: null }),
 
-    // Obtener datos del perfil
     profile: async () => {
         const token = storeAuth.getState().token
         if (!token) return
 
         try {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"))
-            const endpoint = storedUser.state.rol ==="veterinario"
+            // Asegúrate de que storedUser y storedUser.state existan antes de acceder a rol
+            if (!storedUser || !storedUser.state) return; 
+            
+            const endpoint = storedUser.state.rol === "veterinario"
                 ? "veterinario/perfil"
                 : "paciente/perfil"
+            
             const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
-            const respuesta = await axios.get(url, getAuthHeaders())
+            
+            // CORRECCIÓN: Definir las opciones con el token aquí directamente
+            const options = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            
+            // Usar 'options' en lugar de 'getAuthHeaders()'
+            const respuesta = await axios.get(url, options)
             set({ user: respuesta.data })
         } catch (error) {
             console.error(error)

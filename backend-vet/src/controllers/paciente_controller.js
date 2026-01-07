@@ -7,14 +7,14 @@ import fs from "fs-extra"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 
 const registrarPaciente = async(req,res)=>{
-
     try {
+        if (!req.veterinarioHeader) {
+            return res.status(403).json({ msg: "Acción no permitida para pacientes" });
+        }
+
         const {emailPropietario} = req.body
-
         if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Debes llenar todos los campos"})
-
         const emailExistente = await Paciente.findOne({emailPropietario})
-        
         if(emailExistente) return res.status(400).json({msg:"El email ya se encuentra registrado"})
 
         const password = Math.random().toString(36).toUpperCase().slice(2, 5)
@@ -22,7 +22,7 @@ const registrarPaciente = async(req,res)=>{
         const nuevoPaciente = new Paciente({
             ...req.body,
             passwordPropietario: await Paciente.prototype.encryptPassword("VET"+password),
-            veterinario: req.veterinarioHeader._id
+            veterinario: req.veterinarioHeader._id // Aquí daba error antes si no eras vet
         })
 
         if (req.files?.imagen) {
@@ -48,6 +48,10 @@ const registrarPaciente = async(req,res)=>{
 
 const listarPacientes = async (req,res)=>{
     try {
+        if (!req.veterinarioHeader) {
+             return res.status(403).json({ msg: "Acceso no autorizado. Solo los veterinarios pueden listar pacientes." })
+        }
+
         const pacientes = await Paciente.find({ estadoMascota: true, veterinario: req.veterinarioHeader._id }).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
         res.status(200).json(pacientes)
 
