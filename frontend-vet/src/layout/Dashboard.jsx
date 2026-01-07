@@ -54,7 +54,7 @@ const Dashboard = () => {
 
                     {/* Enlaces a Listar */}
                     {
-                        user?.rol == "veterinario" && (
+                        true && (
                             <li className="text-center">
                                 <Link to='/dashboard/list' 
                                 className={`${urlActual === '/dashboard/list' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Listar</Link>
