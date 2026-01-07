@@ -19,7 +19,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
 import storeProfile from './context/storeProfile'
 import storeAuth from './context/storeAuth'
-
+import PrivateRouteWithRole from './routes/PrivateRouteWithRole'
 
 
 function App() {
@@ -53,12 +53,24 @@ function App() {
             <ProtectedRoute>
               <Routes>
                 <Route element={<Dashboard />}>
-                  <Route index element={<Panel />} />
+                  <Route index element={
+                    <PrivateRouteWithRole>
+                      <Panel />
+                    </PrivateRouteWithRole>
+                  } />
                   <Route path='profile' element={<Profile />} />
                   <Route path='list' element={<List />} />
                   <Route path='details/:id' element={<Details />} />
-                  <Route path='create' element={<Create />} />
-                  <Route path='update/:id' element={<Update />} />
+                  <Route path='create' element={
+                    <PrivateRouteWithRole>
+                      <Create />
+                    </PrivateRouteWithRole>
+                  } />
+                  <Route path='update/:id' element={
+                    <PrivateRouteWithRole>
+                      <Update />
+                    </PrivateRouteWithRole>
+                  } />
                   <Route path='chat' element={<Chat />} />
                 </Route>
               </Routes>
