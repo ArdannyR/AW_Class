@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import cors from 'cors';
 import routerVeterinarios from './routers/veterinario_routes.js'
 import routerPacientes from './routers/paciente_routes.js'
+import routerTratamientos from './routers/tratamiento_routes.js'
 import cloudinary from 'cloudinary'
 import fileUpload from "express-fileupload"
 
@@ -38,6 +39,7 @@ app.get('/', (req, res) => res.send("Server on"))
 // Ahora que los middlewares están cargados, las rutas funcionarán correctamente
 app.use('/api', routerVeterinarios)
 app.use('/api', routerPacientes)
+app.use('/api', routerTratamientos)
 
 // Manejo de rutas no encontradas
 app.use((req, res) => res.status(404).send("Endpoint no encontrado - 404"))
