@@ -1,4 +1,5 @@
-import { mongoose, Schema, model }  from "mongoose";
+import mongoose from "mongoose";
+import { Schema, model }  from "mongoose";
 
 const tratamientoSchema = new Schema({
     nombre:{
@@ -26,9 +27,9 @@ const tratamientoSchema = new Schema({
         enum: ['Pendiente', 'Pagado'],
         default: 'Pendiente'
     },
-    paciente:{
+    paciente: { 
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Paciente'
+        ref:'Paciente' 
     }
 },{
     timestamps:true

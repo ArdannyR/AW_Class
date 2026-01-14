@@ -16,16 +16,10 @@ const storeProfile = create((set) => ({
 
         try {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"))
-            // Asegúrate de que storedUser y storedUser.state existan antes de acceder a rol
             if (!storedUser || !storedUser.state) return; 
             
-            const endpoint = storedUser.state.rol === "veterinario"
-                ? "veterinario/perfil"
-                : "paciente/perfil"
-            
+            const endpoint = storedUser.state.rol === "veterinario" ? "veterinario/perfil" : "paciente/perfil"
             const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
-            
-            // CORRECCIÓN: Definir las opciones con el token aquí directamente
             const options = {
                 headers: {
                     "Content-Type": "application/json",
@@ -33,7 +27,6 @@ const storeProfile = create((set) => ({
                 },
             }
             
-            // Usar 'options' en lugar de 'getAuthHeaders()'
             const respuesta = await axios.get(url, options)
             set({ user: respuesta.data })
         } catch (error) {
@@ -41,7 +34,6 @@ const storeProfile = create((set) => ({
         }
     },
 
-    // Actualizar datos del perfil
     updateProfile: async (url, data) => {
         const token = storeAuth.getState().token
         if (!token) return
@@ -55,8 +47,6 @@ const storeProfile = create((set) => ({
             }
 
             const respuesta = await axios.put(url, data, options)
-            
-            // Actualizamos el usuario en el estado con la respuesta del backend
             set({ user: respuesta.data })
             
             toast.success("Perfil actualizado correctamente")
