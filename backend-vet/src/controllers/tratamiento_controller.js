@@ -49,7 +49,7 @@ const pagarTratamiento = async (req, res) => {
         const clienteStripe = await stripe.customers.create({name: paciente.nombrePropietario,email: paciente.emailPropietario})
 
         const payment = await stripe.paymentIntents.create({
-            amount:cantidad,
+            amount:Math.round(cantidad*100),
             currency: "usd",
             description: motivo,
             payment_method: paymentMethodId,
