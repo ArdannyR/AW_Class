@@ -1,68 +1,100 @@
-import { MdDeleteForever, MdOutlinePayments } from "react-icons/md";
-import ModalPayment from "./ModalPayment";
-// 1. IMPORTAR EL HOOK AQUÍ
-import storeTreatments from "../../context/storeTreatments";
+/* eslint-disable react/prop-types */
+import { MdDeleteForever, MdAttachMoney  } from "react-icons/md"
+import storeTreatments from "../../context/storeTreatments"
+import storeAuth from "../../context/storeAuth"
+import ModalPayment from "./ModalPayment"
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
+import { useState } from "react"
+const stripePromise = loadStripe(import.meta.env.VITE_STRAPI_KEY)
+import { ToastContainer } from 'react-toastify'
 
-// 2. AÑADIR listPatient A LOS PROPS (asegúrate de pasarlo desde el componente padre)
-const TableTreatments = ({ treatments, listPatient }) => {
+
+const TableTreatments = ({treatments,listPatient}) => {
+
+    const { rol } = storeAuth()
     const { deleteTreatments } = storeTreatments()
+    const { modal,toggleModal } = storeTreatments()
+    const [selectedTreatment,setSelectedTreatment] = useState(null)
+
 
     const handleDelete = async (id) => {
-        // Asegúrate de que el id sea válido antes de llamar
         const url = `${import.meta.env.VITE_BACKEND_URL}/tratamiento/eliminar/${id}`
-        await deleteTreatments(url) // Es recomendable esperar con await
-        
-        // Verificamos si listPatient existe antes de ejecutarlo
-        if(listPatient) listPatient();
+        deleteTreatments(url)
+        listPatient()
     }
 
     return (
-        <table className='w-full mt-5 table-auto shadow-lg bg-white'>
-            {/* ... (tu thead sigue igual) ... */}
-            <thead className='bg-gray-800 text-slate-400'>
-                <tr>
-                    <th className="p-2">N°</th>
-                    <th className="p-2">Nombre</th>
-                    <th className="p-2">Descripción</th>
-                    <th className="p-2">Prioridad</th>
-                    <th className="p-2">Precio</th>
-                    <th className="p-2">Estado pago</th>
-                    <th className="p-2">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    treatments.map((treatment, index) => (
-                        <tr className="hover:bg-gray-300 text-center" key={treatment._id || index}>
-                            <td>{index + 1}</td>
-                            <td>{treatment.nombre}</td>
-                            <td>{treatment.detalle}</td>
-                            <td>{treatment.prioridad}</td>
-                            <td>${treatment.precio}</td>
-                            <td>
-                                <span className="bg-blue-100 text-green-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                                    {treatment.estadoPago}
-                                </span>
-                            </td>
 
-                            <td className='py-2 text-center'>
-                                <MdOutlinePayments
-                                    className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
-                                    title="Pagar"
-                                />
+        <>
+            <ToastContainer/>
+            
+            <table className='w-full mt-5 table-auto shadow-lg  bg-white'>
+            
+                <thead className='bg-gray-800 text-slate-400'>
+                    <tr>
+                        <th className='p-2'>N°</th>
+                        <th className='p-2'>Nombre</th>
+                        <th className='p-2'>Detalle</th>
+                        <th className='p-2'>Prioridad</th>
+                        <th className='p-2'>Precio</th>
+                        <th className='p-2'>Estado pago</th>
+                        <th className='p-2'>Acciones</th>
+                    </tr>
+                </thead>
+            
+                <tbody>
+                    {
+                        treatments.map((treatment, index) => (
+                            <tr className="hover:bg-gray-300 text-center" key={treatment.id || index}>
+                                <td>{index + 1}</td>
+                                <td>{treatment.nombre}</td>
+                                <td>{treatment.detalle}</td>
+                                <td>{treatment.prioridad}</td>
+                                <td>$ {treatment.precio}</td>
+                                <td className={treatment.estadoPago === 'Pagado' ? 'text-green-500 text-sm' : 'text-red-500 text-sm'}>{treatment.estadoPago}</td>
+                                
+                                <td className='py-2 text-center'>
 
-                                <MdDeleteForever
-                                    className="h-8 w-8 text-red-900 cursor-pointer inline-block hover:text-red-600"
-                                    title="Eliminar" 
-                                    // 3. CORRECCIÓN: Usar _id en lugar de id
-                                    onClick={() => {handleDelete(treatment._id)}}
-                                />
-                            </td>
-                        </tr>
-                    ))
-                }
-            </tbody>
-        </table>
+                                {rol === "paciente" && (
+                                    <MdAttachMoney
+                                        className={
+                                            treatment.estadoPago === "Pagado"
+                                            ? "h-7 w-7 text-gray-500 pointer-events-none inline-block mr-2"
+                                            : "h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
+                                        }
+                                        title="Pagar"
+                                        onClick={() => {
+                                            setSelectedTreatment(treatment)
+                                            toggleModal("payment")
+                                        }}
+                                    />
+                                )}
+
+                                {
+                                    rol==="veterinario" && 
+                                    (
+                                        <MdDeleteForever
+                                            className={treatment.estadoPago==="Pagado" ? "h-8 w-8 text-gray-500 pointer-events-none inline-block" :"h-8 w-8 text-red-900 cursor-pointer inline-block hover:text-red-600"}
+                                            title="Eliminar" onClick={() => { handleDelete(treatment._id) }} />
+                                    )
+                                }
+                                </td>
+                            </tr>
+                        ))
+                    }
+
+                </tbody>
+            </table>
+
+            {modal === "payment" && selectedTreatment && (
+                <Elements stripe={stripePromise}>
+                    <ModalPayment treatment={selectedTreatment} />
+                </Elements>
+            )}
+        
+        </>
+
     )
 }
 

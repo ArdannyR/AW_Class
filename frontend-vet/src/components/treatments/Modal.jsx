@@ -8,7 +8,8 @@ const ModalTreatments = ({patientID}) => {
 
     const registerTreatmentsForm = (dataForm) => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/tratamiento/registro`
-        const newData = { ...dataForm, paciente: patientID }
+        const newData = { ...dataForm, precio: Number(dataForm.precio * 1.15),paciente: patientID }
+
         registerTreatments(url,newData)
     }
 
@@ -77,8 +78,7 @@ const ModalTreatments = ({patientID}) => {
                             inputMode="tel"
                             step="any" 
                             placeholder="Ingresa el precio"
-                            className="block w-full rounded-md border border-gray-300 py-1 px-2
-                            text-gray-500 mb-5 bg-gray-50"
+                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5 bg-gray-50"
                             {...register("precio", {
                                 required: "El precio es obligatorio",
                                 min: { value: 1, message: "El precio no puede ser negativo o cero" }
